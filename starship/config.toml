@@ -1,0 +1,35 @@
+STARSHIP_CONFIG_DIR="$HOME/.config/starship"
+STARSHIP_CONFIG_FILE="$STARSHIP_CONFIG_DIR/starship.toml"
+
+if [ ! -d "$STARSHIP_CONFIG_DIR" ]; then
+  mkdir -p "$STARSHIP_CONFIG_DIR"
+  printf "${BLUE}Created Starship config directory.${NC} $*\n"
+fi
+
+if [ ! -f "$STARSHIP_CONFIG_FILE" ]; then
+  cat <<EOF > "$STARSHIP_CONFIG_FILE"
+# Starship Configuration
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+[git_branch]
+symbol = " "
+
+[git_status]
+stashed = "[📦](bold blue) "
+ahead = "[⇡](bold green) "
+behind = "[⇣](bold red) "
+diverged = "[⇕](bold purple) "
+untracked = "[?](bold yellow) "
+modified = "[!](bold red) "
+staged = "[+](bold green) "
+conflicted = "[=](bold red) "
+
+[package]
+symbol = "📦 "
+EOF
+  printf "${GREEN}Starship config file created successfully.${NC} $*\n"
+else
+  printf "${GREEN}Starship config file already exists.${NC} $*\n"
+fi
