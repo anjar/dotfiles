@@ -214,15 +214,14 @@ antigravity_choice=${antigravity_choice:-n}
 if [ "$antigravity_choice" = "y" ] || [ "$antigravity_choice" = "Y" ]; then
   if ! command -v python3 >/dev/null 2>&1; then
     printf "${BLUE}Installing Python3 first...${NC}\n"
-    sudo apt install python3 python3-pip -y
+    sudo apt install python3 -y
   fi
   
-  if command -v pip3 >/dev/null 2>&1; then
-    printf "${BLUE}Installing antigravity...${NC}\n"
-    pip3 install antigravity 2>/dev/null || printf "${YELLOW}Note: antigravity is a Python easter egg module (built-in). You can use it with 'python3 -c \"import antigravity\"'${NC}\n"
-    printf "${GREEN}antigravity is available.${NC}\n"
+  if command -v python3 >/dev/null 2>&1; then
+    printf "${GREEN}antigravity is a built-in Python easter egg module.${NC}\n"
+    printf "${YELLOW}You can use it with: python3 -c \"import antigravity\"${NC}\n"
   else
-    printf "${RED}pip3 is not available. Cannot install antigravity.${NC}\n"
+    printf "${RED}Python3 is not available. Cannot use antigravity.${NC}\n"
   fi
 else
   printf "${YELLOW}Skipping antigravity installation.${NC}\n"
@@ -230,7 +229,7 @@ fi
 
 # Check GitHub SSH connection
 printf "${BLUE}Checking GitHub SSH connection...${NC}\n"
-if ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | grep -q "successfully authenticated"; then
+if ssh -T git@github.com -o StrictHostKeyChecking=accept-new 2>&1 | grep -q "successfully authenticated"; then
   printf "${GREEN}GitHub SSH connection is working!${NC}\n"
 else
   printf "${YELLOW}GitHub SSH connection failed or not configured.${NC}\n"
@@ -244,6 +243,8 @@ if [ -f "$HOME/.bashrc" ]; then
   # Check if direnv hook is in bashrc
   if [ "$direnv_choice" = "y" ] || [ "$direnv_choice" = "Y" ]; then
     if ! grep -q 'eval "$(direnv hook bash)"' "$HOME/.bashrc"; then
+      echo '' >> "$HOME/.bashrc"
+      echo '# Added by setup.sh' >> "$HOME/.bashrc"
       echo 'eval "$(direnv hook bash)"' >> "$HOME/.bashrc"
       BASHRC_MODIFIED=true
       printf "${GREEN}Added direnv hook to ~/.bashrc${NC}\n"
@@ -252,6 +253,8 @@ if [ -f "$HOME/.bashrc" ]; then
   
   # Check if starship is in bashrc
   if ! grep -q 'eval "$(starship init bash)"' "$HOME/.bashrc"; then
+    echo '' >> "$HOME/.bashrc"
+    echo '# Added by setup.sh' >> "$HOME/.bashrc"
     echo 'eval "$(starship init bash)"' >> "$HOME/.bashrc"
     BASHRC_MODIFIED=true
     printf "${GREEN}Added starship init to ~/.bashrc${NC}\n"
