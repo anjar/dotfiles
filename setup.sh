@@ -85,10 +85,25 @@ else
   printf "${YELLOW}Skipping Devenv installation.${NC}\n"
 fi
 
+# Ask if the user wants to install NVM (Node Version Manager)
+read -p "Do you want to install NVM (Node Version Manager)? (y/N): " nvm_choice
+nvm_choice=${nvm_choice:-n}
+if [ "$nvm_choice" = "y" ] || [ "$nvm_choice" = "Y" ]; then
+  if [ ! -d "$HOME/.nvm" ]; then
+    printf "${BLUE}Installing NVM...${NC}\n"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    printf "${GREEN}NVM installed successfully.${NC}\n"
+  else
+    printf "${GREEN}NVM is already installed.${NC}\n"
+  fi
+else
+  printf "${YELLOW}Skipping NVM installation.${NC}\n"
+fi
+
 # Check if Starship is already installed
 if ! command -v starship >/dev/null 2>&1; then
   printf "${BLUE}Installing Starship...${NC}\n"
-  curl -fsSL https://starship.rs/install.sh | bash -s -- -y
+  curl -sS https://starship.rs/install.sh | sh -s -- -y
   printf "${GREEN}Starship installed successfully.${NC}\n"
 else
   printf "${GREEN}Starship is already installed.${NC}\n"
@@ -248,6 +263,19 @@ if [ -f "$HOME/.bashrc" ]; then
       echo 'eval "$(direnv hook bash)"' >> "$HOME/.bashrc"
       BASHRC_MODIFIED=true
       printf "${GREEN}Added direnv hook to ~/.bashrc${NC}\n"
+    fi
+  fi
+  
+  # Check if NVM is in bashrc
+  if [ "$nvm_choice" = "y" ] || [ "$nvm_choice" = "Y" ]; then
+    if ! grep -q 'export NVM_DIR=' "$HOME/.bashrc"; then
+      echo '' >> "$HOME/.bashrc"
+      echo '# Added by setup.sh' >> "$HOME/.bashrc"
+      echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.bashrc"
+      echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
+      echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion' >> "$HOME/.bashrc"
+      BASHRC_MODIFIED=true
+      printf "${GREEN}Added NVM initialization to ~/.bashrc${NC}\n"
     fi
   fi
   
