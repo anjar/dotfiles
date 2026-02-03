@@ -93,6 +93,7 @@ if [ "$nvm_choice" = "y" ] || [ "$nvm_choice" = "Y" ]; then
     printf "${BLUE}Installing NVM...${NC}\n"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     printf "${GREEN}NVM installed successfully.${NC}\n"
+    printf "${YELLOW}Note: NVM initialization has been automatically added to ~/.bashrc${NC}\n"
   else
     printf "${GREEN}NVM is already installed.${NC}\n"
   fi
@@ -263,19 +264,6 @@ if [ -f "$HOME/.bashrc" ]; then
       echo 'eval "$(direnv hook bash)"' >> "$HOME/.bashrc"
       BASHRC_MODIFIED=true
       printf "${GREEN}Added direnv hook to ~/.bashrc${NC}\n"
-    fi
-  fi
-  
-  # Check if NVM is in bashrc
-  if [ "$nvm_choice" = "y" ] || [ "$nvm_choice" = "Y" ]; then
-    if ! grep -q 'export NVM_DIR=' "$HOME/.bashrc"; then
-      echo '' >> "$HOME/.bashrc"
-      echo '# Added by setup.sh' >> "$HOME/.bashrc"
-      echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.bashrc"
-      echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
-      echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion' >> "$HOME/.bashrc"
-      BASHRC_MODIFIED=true
-      printf "${GREEN}Added NVM initialization to ~/.bashrc${NC}\n"
     fi
   fi
   
